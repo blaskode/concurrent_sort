@@ -31,29 +31,31 @@ func insert(i int, ele int, slice []int) ([]int){
 	return slice
 }
 
-func merge(long_slice []int, short_slice []int) ([]int) {
+func merge(long_slice []int, short_slice []int, i int) ([]int) {
 	//takes two slices (one if preferably longer than the other)
 	//that have already been sorted individually
 	//and adds the elements of the (presumeably) shorter slice one-by-one
 	//to the longer slice, inserting each at the proper position to keep the
-	//final product sorted
+	//final product sorted, "i" is the position in the longer slice that delineates
+	//the portion that is already sorted (and had numbers from short_slice inserted)
+	//and the portion that has not had any insertions
 	if len(short_slice) == 0 {
 		return long_slice
 	} else {
 		var first int
-		for i := 0; i < len(long_slice) - 1; i++ {		
+		for ; i < len(long_slice) - 1; i++ {		
 			if short_slice[0] >= long_slice[i] && short_slice[0] < long_slice[i + 1] {
 				first, short_slice = short_slice[0], short_slice[1:]
 				long_slice = insert(i + 1, first, long_slice)
-				return merge(long_slice, short_slice)
+				return merge(long_slice, short_slice, i)
 			} else if short_slice[0] >= long_slice[len(long_slice) - 1]{
 				first, short_slice = short_slice[0], short_slice[1:]
 				long_slice = insert(len(long_slice) + 1, first, long_slice)
-				return merge(long_slice, short_slice)
+				return merge(long_slice, short_slice, i)
 			} else if short_slice[0] <= long_slice[0] {
 				first, short_slice = short_slice[0], short_slice[1:]
 				long_slice = insert(0, first, long_slice)
-				return merge(long_slice, short_slice)
+				return merge(long_slice, short_slice, i)
 			}
 		}	
 	}
@@ -63,9 +65,9 @@ func merge(long_slice []int, short_slice []int) ([]int) {
 
 func merge_all(one []int, two []int, three []int, four []int) ([]int) {
 	//merges four slices and maintains sorting order
-	final := merge(one, two)
-	final = merge(final, three)
-	final = merge(final, four)
+	final := merge(one, two, 0)
+	final = merge(final, three, 0)
+	final = merge(final, four, 0)
 	return final
 }
 
